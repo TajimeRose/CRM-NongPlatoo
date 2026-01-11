@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -10,9 +10,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { icon: LayoutDashboard, label: 'แดชบอร์ด', path: '/' },
@@ -25,7 +27,14 @@ const navItems = [
 
 const AdminSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout, user } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <aside
@@ -74,8 +83,9 @@ const AdminSidebar = () => {
         })}
       </nav>
 
-      {/* Status indicator */}
-      <div className="p-4 border-t border-sidebar-border">
+      {/* User & Logout */}
+      <div className="p-4 border-t border-sidebar-border space-y-3">
+        {/* Status indicator */}
         <div className={cn('flex items-center gap-3', collapsed && 'justify-center')}>
           <div className="relative">
             <Activity className="w-5 h-5 text-success" />
@@ -88,6 +98,19 @@ const AdminSidebar = () => {
             </div>
           )}
         </div>
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          className={cn(
+            'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors',
+            collapsed && 'justify-center px-2'
+          )}
+          title={collapsed ? 'ออกจากระบบ' : undefined}
+        >
+          <LogOut className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && <span className="text-sm font-medium">ออกจากระบบ</span>}
+        </button>
       </div>
     </aside>
   );
