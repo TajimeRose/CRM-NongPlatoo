@@ -9,48 +9,48 @@ import { Users, Eye, MessageSquare, Clock, TrendingUp, Activity } from 'lucide-r
 
 const Dashboard = () => {
   return (
-    <AdminLayout title="Dashboard" subtitle="Welcome back! Here's your system overview.">
+    <AdminLayout title="แดชบอร์ด" subtitle="ยินดีต้อนรับ! ภาพรวมระบบน้องปลาทู - ผู้ช่วยประชาสัมพันธ์การท่องเที่ยวสมุทรสงคราม">
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
         <StatCard
-          title="Total Users"
+          title="ผู้ใช้ทั้งหมด"
           value={mockStats.totalUsers}
-          change="+12.5% from last month"
+          change="+12.5% จากเดือนที่แล้ว"
           changeType="positive"
           icon={Users}
         />
         <StatCard
-          title="Active Users"
+          title="ผู้ใช้ออนไลน์"
           value={mockStats.activeUsers}
-          change="Currently online"
+          change="กำลังใช้งานอยู่"
           changeType="neutral"
           icon={Activity}
         />
         <StatCard
-          title="Page Views"
+          title="จำนวนเข้าชม"
           value={mockStats.totalPageViews}
-          change="+8.2% from last week"
+          change="+8.2% จากสัปดาห์ที่แล้ว"
           changeType="positive"
           icon={Eye}
         />
         <StatCard
-          title="AI Queries"
+          title="คำถาม AI"
           value={mockStats.aiQueries}
-          change="+23.1% from last month"
+          change="+23.1% จากเดือนที่แล้ว"
           changeType="positive"
           icon={MessageSquare}
         />
         <StatCard
-          title="Avg. Session"
+          title="ระยะเวลาเฉลี่ย"
           value={mockStats.avgSessionDuration}
-          change="+0.5m from last week"
+          change="+0.5 นาทีจากสัปดาห์ที่แล้ว"
           changeType="positive"
           icon={Clock}
         />
         <StatCard
           title="Bounce Rate"
           value={`${mockStats.bounceRate}%`}
-          change="-2.3% from last month"
+          change="-2.3% จากเดือนที่แล้ว"
           changeType="positive"
           icon={TrendingUp}
         />

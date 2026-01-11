@@ -14,7 +14,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="chart-tooltip">
         <p className="text-foreground font-medium">{label}</p>
-        <p className="text-primary">{payload[0].value.toLocaleString()} views</p>
+        <p className="text-primary">{payload[0].value.toLocaleString()} ครั้ง</p>
       </div>
     );
   }
@@ -24,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const PageViewsChart = () => {
   return (
     <div className="glass-card p-6 h-[400px]">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Page Views</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">จำนวนการเข้าชมหน้า</h3>
       <ResponsiveContainer width="100%" height="85%">
         <BarChart data={mockPageViews} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false} />

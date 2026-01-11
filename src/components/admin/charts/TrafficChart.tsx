@@ -14,7 +14,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="chart-tooltip">
         <p className="text-foreground font-medium">{label}</p>
-        <p className="text-primary">{payload[0].value} active users</p>
+        <p className="text-primary">{payload[0].value} ผู้ใช้งานออนไลน์</p>
       </div>
     );
   }
@@ -24,7 +24,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const TrafficChart = () => {
   return (
     <div className="glass-card p-6 h-[300px]">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Real-time Traffic</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">สถิติผู้เข้าชมแบบเรียลไทม์</h3>
       <ResponsiveContainer width="100%" height="85%">
         <AreaChart data={mockTrafficData}>
           <defs>

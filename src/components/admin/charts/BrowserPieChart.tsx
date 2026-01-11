@@ -32,7 +32,7 @@ const CustomLegend = ({ payload }: any) => {
 const BrowserPieChart = () => {
   return (
     <div className="glass-card p-6 h-[400px]">
-      <h3 className="text-lg font-semibold text-foreground mb-4">Browser Distribution</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">เบราว์เซอร์ที่ใช้เข้าชม</h3>
       <ResponsiveContainer width="100%" height="85%">
         <PieChart>
           <Pie

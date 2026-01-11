@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 const AiUsageChart = () => {
   return (
     <div className="glass-card p-6 h-[400px]">
-      <h3 className="text-lg font-semibold text-foreground mb-4">AI Usage Trends</h3>
+      <h3 className="text-lg font-semibold text-foreground mb-4">แนวโน้มการใช้งาน AI น้องปลาทู</h3>
       <ResponsiveContainer width="100%" height="85%">
         <LineChart data={mockAiUsageData}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -43,7 +43,7 @@ const AiUsageChart = () => {
           <Line
             type="monotone"
             dataKey="queries"
-            name="Queries"
+            name="คำถาม"
             stroke="hsl(var(--primary))"
             strokeWidth={2}
             dot={{ fill: 'hsl(var(--primary))', strokeWidth: 0, r: 4 }}

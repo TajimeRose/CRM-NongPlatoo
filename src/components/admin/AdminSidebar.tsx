@@ -15,12 +15,12 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 
 const navItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', path: '/' },
-  { icon: Users, label: 'Users', path: '/users' },
-  { icon: MapPin, label: 'Places', path: '/places' },
-  { icon: Settings, label: 'System Config', path: '/config' },
-  { icon: Shield, label: 'Security Logs', path: '/security' },
-  { icon: MessageSquare, label: 'Chat Logs', path: '/chats' },
+  { icon: LayoutDashboard, label: 'แดชบอร์ด', path: '/' },
+  { icon: Users, label: 'ผู้ใช้งาน', path: '/users' },
+  { icon: MapPin, label: 'สถานที่ท่องเที่ยว', path: '/places' },
+  { icon: Settings, label: 'ตั้งค่าระบบ', path: '/config' },
+  { icon: Shield, label: 'บันทึกความปลอดภัย', path: '/security' },
+  { icon: MessageSquare, label: 'ประวัติแชท AI', path: '/chats' },
 ];
 
 const AdminSidebar = () => {
@@ -41,7 +41,7 @@ const AdminSidebar = () => {
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
               <Zap className="w-5 h-5 text-primary" />
             </div>
-            <span className="font-semibold text-foreground">Control Center</span>
+            <span className="font-semibold text-foreground">น้องปลาทู Admin</span>
           </div>
         )}
         <button
@@ -83,8 +83,8 @@ const AdminSidebar = () => {
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-xs font-medium text-foreground">System Online</span>
-              <span className="text-xs text-muted-foreground">All services running</span>
+              <span className="text-xs font-medium text-foreground">ระบบออนไลน์</span>
+              <span className="text-xs text-muted-foreground">บริการทั้งหมดทำงานปกติ</span>
             </div>
           )}
         </div>
