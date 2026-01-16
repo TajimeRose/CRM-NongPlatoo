@@ -1,17 +1,38 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { useChatHistories } from '@/hooks/useApi';
 import { mockChatHistories } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Search, MessageSquare, User, Bot, Clock, Coins, X } from 'lucide-react';
+import { Search, MessageSquare, User, Bot, Clock, Coins, X, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const ChatLogs = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedChat, setSelectedChat] = useState<typeof mockChatHistories[0] | null>(null);
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
 
-  const filteredChats = mockChatHistories.filter(
+interface ChatHistory {
+  id: number;
+  userId: number;
+  userName: string;
+  messages: ChatMessage[];
+  tokensUsed: number;
+  createdAt: string;
+}
+
+const ChatLogs = () => {
+  const { data: apiChatHistories, isLoading, error } = useChatHistories();
+
+  // Use API data if available, fallback to mock data
+  const chatHistories: ChatHistory[] = apiChatHistories || (mockChatHistories as unknown as ChatHistory[]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedChat, setSelectedChat] = useState<ChatHistory | null>(null);
+
+  const filteredChats = chatHistories.filter(
     (chat) =>
       chat.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       chat.messages.some((m) => m.content.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -22,6 +43,21 @@ const ChatLogs = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-180px)]">
         {/* Chat List */}
         <div className="glass-card p-4 flex flex-col">
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span>กำลังโหลด...</span>
+            </div>
+          )}
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 p-2 bg-destructive/10 text-destructive rounded-lg text-sm">
+              ไม่สามารถโหลดจาก API - แสดงข้อมูลตัวอย่าง
+            </div>
+          )}
+
           <div className="relative mb-4">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -69,6 +105,13 @@ const ChatLogs = () => {
                   </div>
                 </button>
               ))}
+
+              {filteredChats.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>No chat logs found</p>
+                </div>
+              )}
             </div>
           </ScrollArea>
         </div>

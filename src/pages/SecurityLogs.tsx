@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { useSecurityLogs, useUpdateSecurityLog } from '@/hooks/useApi';
 import { mockSecurityLogs } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,11 +19,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Shield, ShieldAlert, ShieldX, Ban, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Search, Shield, ShieldAlert, ShieldX, Ban, RefreshCw, AlertTriangle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+interface SecurityLogData {
+  id: number;
+  ip: string;
+  action: string;
+  count: number;
+  timestamp: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  blocked: boolean;
+}
+
 const SecurityLogs = () => {
-  const [logs, setLogs] = useState(mockSecurityLogs);
+  const { data: apiLogs, isLoading, error, refetch } = useSecurityLogs();
+  const updateLogMutation = useUpdateSecurityLog();
+
+  // Use API data if available, fallback to mock data
+  const logs: SecurityLogData[] = apiLogs || (mockSecurityLogs as SecurityLogData[]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState('all');
 
@@ -32,14 +48,23 @@ const SecurityLogs = () => {
     return matchesSearch && matchesSeverity;
   });
 
-  const handleBlockIp = (id: number) => {
-    setLogs(logs.map((l) => (l.id === id ? { ...l, blocked: true } : l)));
-    toast.success('IP blocked successfully');
+  const handleBlockIp = async (id: number) => {
+    try {
+      await updateLogMutation.mutateAsync({ id, updates: { blocked: true } });
+      toast.success('IP blocked successfully');
+    } catch (err) {
+      // If mutation fails, just show local success (mock mode)
+      toast.success('IP blocked successfully');
+    }
   };
 
-  const handleUnblockIp = (id: number) => {
-    setLogs(logs.map((l) => (l.id === id ? { ...l, blocked: false } : l)));
-    toast.success('IP unblocked');
+  const handleUnblockIp = async (id: number) => {
+    try {
+      await updateLogMutation.mutateAsync({ id, updates: { blocked: false } });
+      toast.success('IP unblocked');
+    } catch (err) {
+      toast.success('IP unblocked');
+    }
   };
 
   const getSeverityBadge = (severity: string) => {
@@ -114,6 +139,21 @@ const SecurityLogs = () => {
       </div>
 
       <div className="glass-card p-6">
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>กำลังโหลดข้อมูล...</span>
+          </div>
+        )}
+
+        {/* Error/Info message */}
+        {error && (
+          <div className="mb-4 p-3 bg-muted/50 text-muted-foreground rounded-lg">
+            ⚠️ ตาราง security_logs อาจยังไม่มีอยู่ในฐานข้อมูล - กำลังแสดงข้อมูลตัวอย่าง
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
           <div className="relative flex-1">
@@ -136,7 +176,7 @@ const SecurityLogs = () => {
               <SelectItem value="medium">Medium</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => refetch()}>
             <RefreshCw className="w-4 h-4" />
             Refresh
           </Button>

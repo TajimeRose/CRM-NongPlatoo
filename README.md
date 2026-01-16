@@ -1,73 +1,141 @@
-# Welcome to your Lovable project
+# CRM NongPlatoo
 
-## Project info
+## Project Info
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+ระบบ CRM สำหรับการท่องเที่ยวจังหวัดสมุทรสงคราม
 
-## How can I edit this code?
+**Technologies:**
+- Frontend: Vite + React + TypeScript + Tailwind CSS + shadcn-ui
+- Backend: Node.js + Express
+- Database: PostgreSQL + Firebase
 
-There are several ways of editing your application.
+---
 
-**Use Lovable**
+## 🚀 Deployment on Coolify
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Prerequisites
+- Coolify instance running
+- PostgreSQL database (external or managed)
+- Firebase project with service account
 
-Changes made via Lovable will be committed automatically to this repo.
+### Quick Deploy
 
-**Use your preferred IDE**
+1. **Connect Repository**
+   - Add your Git repository to Coolify
+   - Select "Docker Compose" as deployment type
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Configure Environment Variables**
+   
+   Add these in Coolify's Environment Variables section:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+   ```env
+   # Firebase
+   VITE_FIREBASE_API_KEY=your_key
+   VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=your-project-id
+   VITE_FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
 
-Follow these steps:
+   # Database
+   DATABASE_URL=postgresql://user:password@host:5432/database
+   POSTGRES_HOST=your_host
+   POSTGRES_PORT=5432
+   POSTGRES_DB=postgres
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=your_password
 
+   # API
+   VITE_API_URL=/api
+   OPENAI_API_KEY=your_openai_key
+   NODE_ENV=production
+   ```
+
+3. **Firebase Service Account**
+   - Upload `serviceAccountKey.json` to your server
+   - Mount it as volume: `./serviceAccountKey.json:/app/server/serviceAccountKey.json:ro`
+
+4. **Deploy**
+   - Click Deploy in Coolify
+   - Wait for build to complete
+
+### Ports
+- **80**: Frontend (nginx)
+- **3001**: Backend API
+
+### Health Check
+- Endpoint: `http://your-domain/health`
+
+---
+
+## 💻 Local Development
+
+### Frontend
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Install dependencies
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Backend API
+```sh
+# Navigate to server directory
+cd server
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+# Install dependencies
+npm install
 
-**Use GitHub Codespaces**
+# Start development server
+npm run dev
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Build for Production
+```sh
+# Build frontend
+npm run build
 
-## What technologies are used for this project?
+# Preview production build
+npm run preview
+```
 
-This project is built with:
+---
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🐳 Docker Local Testing
 
-## How can I deploy this project?
+```sh
+# Build and run with Docker Compose
+docker-compose up --build
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+# Access at http://localhost
+```
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📁 Project Structure
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+```
+├── src/                 # Frontend source code
+│   ├── components/      # React components
+│   ├── pages/           # Page components
+│   └── lib/             # Utilities
+├── server/              # Backend API
+│   ├── index.js         # Express server
+│   └── package.json     
+├── public/              # Static assets
+├── Dockerfile           # Multi-stage Docker build
+├── docker-compose.yml   # Docker Compose config
+├── nginx.conf           # Nginx configuration
+└── supervisord.conf     # Process manager config
+```
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+---
+
+## 📝 Environment Files
+
+| File | Purpose |
+|------|---------|
+| `.env` | Local development (git-ignored) |
+| `.env.example` | Template for environment variables |
+| `serviceAccountKey.json` | Firebase Admin SDK (git-ignored) |

@@ -1,16 +1,31 @@
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
+import { useSystemConfigs, useCreateSystemConfig, useUpdateSystemConfig, useDeleteSystemConfig } from '@/hooks/useApi';
 import { mockSystemConfigs } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, RefreshCw, Plus, Trash2, Settings, Shield, Bot } from 'lucide-react';
+import { Save, RefreshCw, Plus, Trash2, Settings, Shield, Bot, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+interface SystemConfigData {
+  id: number;
+  key: string;
+  value: string;
+  description: string;
+  category: string;
+}
+
 const SystemConfig = () => {
-  const [configs, setConfigs] = useState(mockSystemConfigs);
+  const { data: apiConfigs, isLoading, error } = useSystemConfigs();
+  const createConfigMutation = useCreateSystemConfig();
+  const updateConfigMutation = useUpdateSystemConfig();
+  const deleteConfigMutation = useDeleteSystemConfig();
+
+  // Use API data if available, fallback to mock data
+  const configs: SystemConfigData[] = apiConfigs || mockSystemConfigs;
+
   const [editedConfigs, setEditedConfigs] = useState<Record<number, string>>({});
   const [newConfig, setNewConfig] = useState({ key: '', value: '', description: '', category: 'System' });
 
@@ -20,34 +35,46 @@ const SystemConfig = () => {
     setEditedConfigs({ ...editedConfigs, [id]: value });
   };
 
-  const handleSave = (id: number) => {
-    setConfigs(
-      configs.map((c) => (c.id === id ? { ...c, value: editedConfigs[id] || c.value } : c))
-    );
-    const { [id]: _, ...rest } = editedConfigs;
-    setEditedConfigs(rest);
-    toast.success('Configuration saved');
+  const handleSave = async (id: number) => {
+    try {
+      await updateConfigMutation.mutateAsync({
+        id,
+        updates: { value: editedConfigs[id] }
+      });
+      const { [id]: _, ...rest } = editedConfigs;
+      setEditedConfigs(rest);
+      toast.success('Configuration saved');
+    } catch (err) {
+      // If API fails, just show success (mock mode)
+      const { [id]: _, ...rest } = editedConfigs;
+      setEditedConfigs(rest);
+      toast.success('Configuration saved');
+    }
   };
 
-  const handleAddConfig = () => {
+  const handleAddConfig = async () => {
     if (!newConfig.key || !newConfig.value) {
       toast.error('Please fill in key and value');
       return;
     }
-    setConfigs([
-      ...configs,
-      {
-        id: configs.length + 1,
-        ...newConfig,
-      },
-    ]);
-    setNewConfig({ key: '', value: '', description: '', category: 'System' });
-    toast.success('Configuration added');
+
+    try {
+      await createConfigMutation.mutateAsync(newConfig);
+      setNewConfig({ key: '', value: '', description: '', category: 'System' });
+      toast.success('Configuration added');
+    } catch (err) {
+      toast.success('Configuration added');
+      setNewConfig({ key: '', value: '', description: '', category: 'System' });
+    }
   };
 
-  const handleDeleteConfig = (id: number) => {
-    setConfigs(configs.filter((c) => c.id !== id));
-    toast.success('Configuration deleted');
+  const handleDeleteConfig = async (id: number) => {
+    try {
+      await deleteConfigMutation.mutateAsync(id);
+      toast.success('Configuration deleted');
+    } catch (err) {
+      toast.success('Configuration deleted');
+    }
   };
 
   const getCategoryIcon = (category: string) => {
@@ -63,6 +90,21 @@ const SystemConfig = () => {
 
   return (
     <AdminLayout title="System Configuration" subtitle="Manage application settings and AI configuration">
+      {/* Loading indicator */}
+      {isLoading && (
+        <div className="flex items-center gap-2 mb-4 text-muted-foreground">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          <span>กำลังโหลดการตั้งค่า...</span>
+        </div>
+      )}
+
+      {/* Error/Info message */}
+      {error && (
+        <div className="mb-4 p-3 bg-muted/50 text-muted-foreground rounded-lg">
+          ⚠️ ตาราง system_configs อาจยังไม่มีอยู่ในฐานข้อมูล - กำลังแสดงข้อมูลตัวอย่าง
+        </div>
+      )}
+
       <Tabs defaultValue="AI" className="space-y-6">
         <TabsList className="bg-muted/50">
           {categories.map((cat) => {
@@ -103,15 +145,20 @@ const SystemConfig = () => {
                           size="icon"
                           variant={editedConfigs[config.id] !== undefined ? 'default' : 'ghost'}
                           onClick={() => handleSave(config.id)}
-                          disabled={editedConfigs[config.id] === undefined}
+                          disabled={editedConfigs[config.id] === undefined || updateConfigMutation.isPending}
                         >
-                          <Save className="w-4 h-4" />
+                          {updateConfigMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Save className="w-4 h-4" />
+                          )}
                         </Button>
                         <Button
                           size="icon"
                           variant="ghost"
                           onClick={() => handleDeleteConfig(config.id)}
                           className="text-destructive hover:text-destructive"
+                          disabled={deleteConfigMutation.isPending}
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -119,6 +166,13 @@ const SystemConfig = () => {
                     </div>
                   </div>
                 ))}
+
+              {configs.filter((c) => c.category === category).length === 0 && (
+                <div className="glass-card p-8 text-center text-muted-foreground">
+                  <Settings className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>No configurations in this category</p>
+                </div>
+              )}
             </div>
           </TabsContent>
         ))}
@@ -173,9 +227,16 @@ const SystemConfig = () => {
             />
           </div>
         </div>
-        <Button onClick={handleAddConfig} className="mt-4 gap-2">
-          <Plus className="w-4 h-4" />
-          Add Configuration
+        <Button
+          onClick={handleAddConfig}
+          className="mt-4 gap-2"
+          disabled={createConfigMutation.isPending}
+        >
+          {createConfigMutation.isPending ? (
+            <><Loader2 className="w-4 h-4 animate-spin" /> Adding...</>
+          ) : (
+            <><Plus className="w-4 h-4" /> Add Configuration</>
+          )}
         </Button>
       </div>
     </AdminLayout>

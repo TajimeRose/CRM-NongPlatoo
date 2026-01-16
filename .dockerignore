@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+server/node_modules
+
+# Build output
+dist
+
+# Development files
+.git
+.gitignore
+*.md
+!README.md
+
+# IDE
+.vscode
+.idea
+
+# Environment files (will be injected by Coolify)
+.env
+.env.*
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+*.test.*
+*.spec.*
+__tests__
+coverage
+
+# Misc
+*.lock
+bun.lockb
