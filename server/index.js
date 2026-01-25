@@ -1,47 +1,109 @@
 // Express.js API Server for CRM Admin Panel
 // Connects to PostgreSQL database and provides REST endpoints
 
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import pg from 'pg';
 import admin from 'firebase-admin';
-import { readFileSync } from 'fs';
+import { readFileSync, createReadStream, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import pool from './src/db.js';
+import placesRouter from './src/routes/places.js';
+import proxyRouter from './src/routes/proxy.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const { Pool } = pg;
+// Configure uploads directory if needed globally, though places router handles its own
+const uploadDir = join(__dirname, 'uploads');
+if (!existsSync(uploadDir)) {
+    mkdirSync(uploadDir, { recursive: true });
+}
 
-const app = express();
-const PORT = process.env.PORT || 3001;
-
+// Firebase Admin SDK initialization code remains...
 // Initialize Firebase Admin SDK
 let firebaseAdmin = null;
+let storageBucket = null;
 try {
     const serviceAccountPath = join(__dirname, 'serviceAccountKey.json');
     const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
 
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
-        databaseURL: 'https://nong-platoo-default-rtdb.asia-southeast1.firebasedatabase.app'
+        databaseURL: 'https://nong-platoo-default-rtdb.asia-southeast1.firebasedatabase.app',
+        storageBucket: 'nong-platoo.firebasestorage.app'
     });
     firebaseAdmin = admin;
+    storageBucket = admin.storage().bucket();
     console.log('✅ Firebase Admin SDK initialized successfully');
+    console.log('✅ Firebase Storage bucket:', storageBucket.name);
 } catch (error) {
     console.warn('⚠️ Firebase Admin SDK not initialized:', error.message);
     console.warn('   Firebase user management features will be disabled');
 }
 
+const app = express();
+const PORT = process.env.PORT || 3001;
+
 // PostgreSQL connection
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:PdQ0GiGzLIVN0VcY2tKSZtYqm7iiUMCEY7nLZghPF5DcZnZsXNhGtD1HJgjrqnRr@38.242.132.39:8900/postgres',
-});
+// Pool is now imported from src/db.js
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Configure multer for image uploads (memory storage for Cloudinary)
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+
+// Cloudinary is auto-configured from CLOUDINARY_URL environment variable
+console.log('☁️ Cloudinary configured:', cloudinary.config().cloud_name ? '✅ ' + cloudinary.config().cloud_name : '❌ Not configured');
+
+const imageUpload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (allowedTypes.includes(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('ไฟล์ต้องเป็นรูปภาพ (JPEG, PNG, GIF, WEBP)'));
+        }
+    }
+});
+
+// Image upload endpoint - Cloudinary
+app.post('/api/upload/image', imageUpload.single('image'), async (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'กรุณาเลือกไฟล์รูปภาพ' });
+    }
+
+    try {
+        // Convert buffer to base64 for Cloudinary upload
+        const base64Data = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+
+        // Upload to Cloudinary
+        const result = await cloudinary.uploader.upload(base64Data, {
+            folder: 'nong-platoo/places',
+            resource_type: 'image',
+        });
+
+        console.log('✅ Image uploaded to Cloudinary:', result.secure_url);
+        res.json({
+            success: true,
+            url: result.secure_url,
+            public_id: result.public_id
+        });
+    } catch (error) {
+        console.error('Cloudinary upload error:', error);
+        res.status(500).json({ error: 'อัปโหลดไฟล์ไม่สำเร็จ: ' + error.message });
+    }
+});
+
+// Routes
+app.use('/api/places', placesRouter);
+app.use('/api/proxy', proxyRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -132,43 +194,10 @@ app.delete('/api/users/:id', async (req, res) => {
 });
 
 // ============ Places API ============
-app.get('/api/places', async (req, res) => {
-    try {
-        const result = await pool.query(`
-      SELECT 
-        id,
-        name,
-        COALESCE(category, attraction_type, 'ทั่วไป') as category,
-        description,
-        0 as views,
-        false as "isPromoted",
-        0 as "promotedScore",
-        NULL as "promotionExpiry"
-      FROM places 
-      ORDER BY name
-    `);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching places:', error);
-        res.status(500).json({ message: 'Failed to fetch places' });
-    }
-});
+// Moved to src/routes/places.js
 
-app.put('/api/places/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { name, category, description } = req.body;
-        const result = await pool.query(
-            `UPDATE places SET name = COALESCE($1, name), category = COALESCE($2, category), description = COALESCE($3, description)
-       WHERE id = $4 RETURNING *`,
-            [name, category, description, id]
-        );
-        res.json(result.rows[0]);
-    } catch (error) {
-        console.error('Error updating place:', error);
-        res.status(500).json({ message: 'Failed to update place' });
-    }
-});
+// ============ Proxy API ============
+// Moved to src/routes/proxy.js
 
 // ============ Chat Logs API ============
 app.get('/api/chat-logs', async (req, res) => {
@@ -374,21 +403,16 @@ app.get('/api/stats', async (req, res) => {
 });
 
 app.get('/api/stats/traffic', async (req, res) => {
-    try {
-        const result = await pool.query(`
-      SELECT 
-        TO_CHAR(created_at, 'HH24:00') as hour,
-        COUNT(DISTINCT COALESCE(user_id, ip_address)) as users
-      FROM user_activity_logs
-      WHERE created_at > NOW() - INTERVAL '24 hours'
-      GROUP BY TO_CHAR(created_at, 'HH24:00')
-      ORDER BY hour
-    `);
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching traffic data:', error);
-        res.json([]); // Return empty array if fails
-    }
+    // Note: user_activity_logs.created_at is 'time with time zone' type, 
+    // which doesn't support TO_CHAR. Returning empty data for now.
+    res.json([]);
+});
+
+// Daily traffic data - total visits per day for the last 7 days
+app.get('/api/stats/daily-traffic', async (req, res) => {
+    // Note: user_activity_logs.created_at is 'time with time zone' type,
+    // which doesn't support TO_CHAR/DATE functions. Returning empty data for now.
+    res.json([]);
 });
 
 app.get('/api/stats/page-views', async (req, res) => {

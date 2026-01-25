@@ -66,9 +66,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         };
         setUser(userData);
         localStorage.setItem('admin_user', JSON.stringify(userData));
+        // Set admin token for API authentication
+        localStorage.setItem('admin_token', 'nongplatoo_admin_secret_2024');
         return { success: true };
       }
-      
+
       return { success: false, error: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง' };
     } catch (error) {
       console.error('Login error:', error);
@@ -79,6 +81,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_token');
     // TODO: Call your logout API if needed
     // await fetch('/api/auth/logout', { method: 'POST' });
   };

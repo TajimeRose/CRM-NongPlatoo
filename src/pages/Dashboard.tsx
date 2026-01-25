@@ -5,6 +5,7 @@ import PageViewsChart from '@/components/admin/charts/PageViewsChart';
 import BrowserPieChart from '@/components/admin/charts/BrowserPieChart';
 import AiUsageChart from '@/components/admin/charts/AiUsageChart';
 import TrafficChart from '@/components/admin/charts/TrafficChart';
+import RealtimeTrafficChart from '@/components/admin/charts/RealtimeTrafficChart';
 import { useStats } from '@/hooks/useApi';
 import { Users, Eye, MessageSquare, Clock, TrendingUp, Activity, Loader2 } from 'lucide-react';
 
@@ -100,9 +101,12 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Traffic Chart */}
+      {/* Traffic Charts */}
       <div className="mb-6">
         <TrafficChart />
+      </div>
+      <div className="mb-6">
+        <RealtimeTrafficChart />
       </div>
 
       {/* Charts Grid */}

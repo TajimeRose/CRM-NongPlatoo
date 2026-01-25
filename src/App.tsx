@@ -9,6 +9,8 @@ import Login from "./pages/Login";
 import Index from "./pages/Index";
 import UsersManagement from "./pages/UsersManagement";
 import PlacesManagement from "./pages/PlacesManagement";
+import PlacesAdmin from "./pages/PlacesAdmin";
+import AdminMapPage from "./pages/AdminMapPage";
 import SystemConfig from "./pages/SystemConfig";
 import SecurityLogs from "./pages/SecurityLogs";
 import ChatLogs from "./pages/ChatLogs";
@@ -28,6 +30,8 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/users" element={<ProtectedRoute><UsersManagement /></ProtectedRoute>} />
             <Route path="/places" element={<ProtectedRoute><PlacesManagement /></ProtectedRoute>} />
+            <Route path="/places-admin" element={<ProtectedRoute><PlacesAdmin /></ProtectedRoute>} />
+            <Route path="/admin/map-editor" element={<ProtectedRoute><AdminMapPage /></ProtectedRoute>} />
             <Route path="/config" element={<ProtectedRoute><SystemConfig /></ProtectedRoute>} />
             <Route path="/security" element={<ProtectedRoute><SecurityLogs /></ProtectedRoute>} />
             <Route path="/chats" element={<ProtectedRoute><ChatLogs /></ProtectedRoute>} />

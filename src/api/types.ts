@@ -20,23 +20,73 @@ export interface User {
 }
 
 export interface Place {
-    id: number;
-    place_id: string;
+    id?: number;
+    place_id?: string;
     name: string;
-    category?: string;
     description?: string;
     address?: string;
     latitude?: number;
     longitude?: number;
+    category?: string;
     opening_hours?: string;
     price_range?: string;
-    image_urls?: string;
-    attraction_type?: 'main_attraction' | 'secondary_attraction' | 'market' | 'activity' | 'restaurant' | 'cafe';
+    price_min?: number;
+    price_max?: number;
+    rating?: number;
+    image_url?: string;
+    image_urls?: string;  // Legacy field for backward compatibility
+    attraction_type?: string;
+    is_active?: boolean;
+    created_at?: string;
+    updated_at?: string;
     // Promotion fields (may need to add to DB)
     is_promoted?: boolean;
     promoted_score?: number;
     promotion_expiry?: string;
     views?: number;
+}
+
+// Type for creating a new place (id is optional)
+export interface CreatePlace {
+    name: string;
+    description?: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    category?: string;
+    opening_hours?: string;
+    price_range?: string;
+    price_min?: number;
+    price_max?: number;
+    rating?: number;
+    image_url?: string;
+    attraction_type?: string;
+    is_active?: boolean;
+}
+
+// Pagination data structure
+export interface PaginationData {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+}
+
+// Response from GET /api/places
+export interface PlacesResponse {
+    data: Place[];
+    pagination: PaginationData;
+}
+
+// CSV validation result
+export interface CSVValidationResult {
+    validRows: Partial<Place>[];
+    invalidRows: Array<{
+        rowNumber: number;
+        data: Record<string, string>;
+        errors: string[];
+    }>;
+    totalRows: number;
 }
 
 export interface ChatLog {

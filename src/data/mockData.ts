@@ -79,21 +79,37 @@ export const mockSecurityLogs = [
 ];
 
 export const mockChatHistories = [
-  { id: 1, userId: 1, userName: 'สมชาย ใจดี', messages: [
-    { role: 'user', content: 'ตลาดน้ำอัมพวาเปิดวันไหนบ้างครับ?', timestamp: '2024-01-11 14:30:00' },
-    { role: 'assistant', content: 'ตลาดน้ำอัมพวาเปิดทุกวันศุกร์ เสาร์ อาทิตย์ และวันหยุดนักขัตฤกษ์ ตั้งแต่เวลา 16:00-21:00 น. ค่ะ...', timestamp: '2024-01-11 14:30:05' },
-  ], tokensUsed: 245, createdAt: '2024-01-11 14:30:00' },
-  { id: 2, userId: 4, userName: 'ผู้ดูแลระบบ', messages: [
-    { role: 'user', content: 'แนะนำที่พักใกล้ตลาดร่มหุบหน่อยครับ', timestamp: '2024-01-11 10:15:00' },
-    { role: 'assistant', content: 'น้องปลาทูแนะนำโฮมสเตย์สวนมะพร้าวริมคลอง อยู่ใกล้ตลาดร่มหุบเพียง 5 กิโลเมตร บรรยากาศริมน้ำสงบเงียบค่ะ...', timestamp: '2024-01-11 10:15:08' },
-  ], tokensUsed: 312, createdAt: '2024-01-11 10:15:00' },
-  { id: 3, userId: 2, userName: 'Admin น้องปลาทู', messages: [
-    { role: 'user', content: 'วัดไหนที่น่าไปเที่ยวในสมุทรสงคราม?', timestamp: '2024-01-10 16:45:00' },
-    { role: 'assistant', content: 'สมุทรสงครามมีวัดที่น่าสนใจหลายแห่งค่ะ เช่น วัดบางกุ้ง (โบสถ์ปรกโพธิ์) ที่มีต้นไม้ปกคลุมโบสถ์เก่าแก่ และวัดจุฬามณีที่มีพระประธานสวยงามมากค่ะ...', timestamp: '2024-01-10 16:45:12' },
-  ], tokensUsed: 189, createdAt: '2024-01-10 16:45:00' },
+  {
+    id: 1, userId: 1, userName: 'สมชาย ใจดี', messages: [
+      { role: 'user', content: 'ตลาดน้ำอัมพวาเปิดวันไหนบ้างครับ?', timestamp: '2024-01-11 14:30:00' },
+      { role: 'assistant', content: 'ตลาดน้ำอัมพวาเปิดทุกวันศุกร์ เสาร์ อาทิตย์ และวันหยุดนักขัตฤกษ์ ตั้งแต่เวลา 16:00-21:00 น. ค่ะ...', timestamp: '2024-01-11 14:30:05' },
+    ], tokensUsed: 245, createdAt: '2024-01-11 14:30:00'
+  },
+  {
+    id: 2, userId: 4, userName: 'ผู้ดูแลระบบ', messages: [
+      { role: 'user', content: 'แนะนำที่พักใกล้ตลาดร่มหุบหน่อยครับ', timestamp: '2024-01-11 10:15:00' },
+      { role: 'assistant', content: 'น้องปลาทูแนะนำโฮมสเตย์สวนมะพร้าวริมคลอง อยู่ใกล้ตลาดร่มหุบเพียง 5 กิโลเมตร บรรยากาศริมน้ำสงบเงียบค่ะ...', timestamp: '2024-01-11 10:15:08' },
+    ], tokensUsed: 312, createdAt: '2024-01-11 10:15:00'
+  },
+  {
+    id: 3, userId: 2, userName: 'Admin น้องปลาทู', messages: [
+      { role: 'user', content: 'วัดไหนที่น่าไปเที่ยวในสมุทรสงคราม?', timestamp: '2024-01-10 16:45:00' },
+      { role: 'assistant', content: 'สมุทรสงครามมีวัดที่น่าสนใจหลายแห่งค่ะ เช่น วัดบางกุ้ง (โบสถ์ปรกโพธิ์) ที่มีต้นไม้ปกคลุมโบสถ์เก่าแก่ และวัดจุฬามณีที่มีพระประธานสวยงามมากค่ะ...', timestamp: '2024-01-10 16:45:12' },
+    ], tokensUsed: 189, createdAt: '2024-01-10 16:45:00'
+  },
 ];
 
-export const mockTrafficData = [
+export const mockDailyTrafficData = [
+  { date: '15 ม.ค.', visitors: 1245 },
+  { date: '16 ม.ค.', visitors: 1580 },
+  { date: '17 ม.ค.', visitors: 1320 },
+  { date: '18 ม.ค.', visitors: 1890 },
+  { date: '19 ม.ค.', visitors: 2150 },
+  { date: '20 ม.ค.', visitors: 1780 },
+  { date: '21 ม.ค.', visitors: 1450 },
+];
+
+export const mockRealtimeTrafficData = [
   { hour: '00:00', users: 120 },
   { hour: '02:00', users: 45 },
   { hour: '04:00', users: 28 },
