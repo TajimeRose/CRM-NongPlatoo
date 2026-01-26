@@ -183,10 +183,10 @@ const PlacesDataTable: React.FC<DataTableProps> = ({
                                         {place.address || '—'}
                                     </TableCell>
                                     <TableCell>
-                                        {place.rating ? (
+                                        {place.rating !== null && place.rating !== undefined && !isNaN(Number(place.rating)) ? (
                                             <div className="flex items-center gap-1">
                                                 <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                                                <span>{place.rating.toFixed(1)}</span>
+                                                <span>{Number(place.rating).toFixed(1)}</span>
                                             </div>
                                         ) : (
                                             <span className="text-muted-foreground">—</span>
@@ -194,8 +194,8 @@ const PlacesDataTable: React.FC<DataTableProps> = ({
                                     </TableCell>
                                     <TableCell>
                                         <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${place.is_active !== false
-                                                ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-                                                : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
+                                            ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                                            : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'
                                             }`}>
                                             {place.is_active !== false ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}
                                         </span>
