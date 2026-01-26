@@ -62,8 +62,8 @@ COPY --from=backend-builder /app/server /app/server
 # Copy nginx config
 COPY nginx.conf /etc/nginx/http.d/default.conf
 
-# Copy supervisor config
-COPY supervisord.conf /etc/supervisor.d/app.ini
+# Copy supervisor config to the correct path
+COPY supervisord.conf /etc/supervisord.conf
 
 # Expose ports
 EXPOSE 80 3001
