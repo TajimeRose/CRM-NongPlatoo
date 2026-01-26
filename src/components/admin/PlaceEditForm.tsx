@@ -384,7 +384,7 @@ const PlaceEditForm: React.FC<PlaceEditFormProps> = ({
                         formDataUpload.append('image', file);
 
                         try {
-                            const response = await fetch('http://localhost:3001/api/upload/image', {
+                            const response = await fetch('/api/upload/image', {
                                 method: 'POST',
                                 body: formDataUpload,
                             });

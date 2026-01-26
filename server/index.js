@@ -26,8 +26,36 @@ if (!existsSync(uploadDir)) {
 let firebaseAdmin = null;
 let storageBucket = null;
 try {
-    const serviceAccountPath = join(__dirname, 'serviceAccountKey.json');
-    const serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+    let serviceAccount;
+
+    // 1. Try environment variable (Production/Coolify)
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        try {
+            let jsonString = process.env.FIREBASE_SERVICE_ACCOUNT;
+
+            // If it doesn't start with '{', assume it's Base64 encoded
+            if (!jsonString.trim().startsWith('{')) {
+                jsonString = Buffer.from(jsonString, 'base64').toString('utf8');
+            }
+
+            serviceAccount = JSON.parse(jsonString);
+            console.log('✅ Loaded Firebase credentials from environment variable');
+        } catch (e) {
+            console.warn('⚠️ FIREBASE_SERVICE_ACCOUNT env var provided but invalid:', e.message);
+        }
+    }
+
+    // 2. Fallback to file (Local Development)
+    if (!serviceAccount) {
+        const serviceAccountPath = join(__dirname, 'serviceAccountKey.json');
+        if (existsSync(serviceAccountPath)) {
+            serviceAccount = JSON.parse(readFileSync(serviceAccountPath, 'utf8'));
+        }
+    }
+
+    if (!serviceAccount) {
+        throw new Error('No credentials found in env var FIREBASE_SERVICE_ACCOUNT or file serviceAccountKey.json');
+    }
 
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
