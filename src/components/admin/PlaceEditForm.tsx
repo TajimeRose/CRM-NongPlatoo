@@ -304,23 +304,7 @@ const PlaceEditForm: React.FC<PlaceEditFormProps> = ({
             </div>
 
             {/* Price */}
-            <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                    <Label htmlFor="price_range">ระดับราคา</Label>
-                    <Select
-                        value={formData.price_range || ''}
-                        onValueChange={(value) => setFormData(prev => ({ ...prev, price_range: value }))}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="เลือก" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {PRICE_RANGE_OPTIONS.map((opt) => (
-                                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                     <Label htmlFor="price_min">ราคาต่ำสุด</Label>
                     <Input
