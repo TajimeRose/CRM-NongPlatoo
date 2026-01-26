@@ -7,7 +7,7 @@ WORKDIR /app
 
 # Copy frontend package files
 COPY package*.json ./
-COPY bun.lockb ./
+COPY package-lock.json ./
 
 # Install dependencies
 RUN npm ci
