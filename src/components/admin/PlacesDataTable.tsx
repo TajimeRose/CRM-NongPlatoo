@@ -108,6 +108,7 @@ const PlacesDataTable: React.FC<DataTableProps> = ({
                                 </div>
                             </TableHead>
                             <TableHead>ที่อยู่</TableHead>
+                            <TableHead>Maps</TableHead>
                             <TableHead
                                 className="cursor-pointer hover:bg-muted/50"
                                 onClick={() => handleSort('rating')}
@@ -181,6 +182,22 @@ const PlacesDataTable: React.FC<DataTableProps> = ({
                                     </TableCell>
                                     <TableCell className="max-w-[200px] truncate text-muted-foreground">
                                         {place.address || '—'}
+                                    </TableCell>
+                                    <TableCell>
+                                        {place.google_maps_link ? (
+                                            <a
+                                                href={place.google_maps_link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 transition-colors"
+                                                title="เปิดใน Google Maps"
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                <MapPin className="w-4 h-4" />
+                                            </a>
+                                        ) : (
+                                            <span className="text-muted-foreground text-xs">—</span>
+                                        )}
                                     </TableCell>
                                     <TableCell>
                                         {place.rating !== null && place.rating !== undefined && !isNaN(Number(place.rating)) ? (

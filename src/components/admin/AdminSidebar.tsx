@@ -21,8 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const navItems = [
   { icon: LayoutDashboard, label: 'แดชบอร์ด', path: '/' },
   { icon: Users, label: 'ผู้ใช้งาน', path: '/users' },
-  { icon: MapPin, label: 'สถานที่ท่องเที่ยว', path: '/places' },
-  { icon: MapPinned, label: 'จัดการสถานที่', path: '/places-admin' },
+  { icon: MapPinned, label: 'จัดการข้อมูลสถานที่ท่องเที่ยว', path: '/places-admin' },
   { icon: Map, label: 'Map Editor', path: '/admin/map-editor' }, // New Item
   { icon: Settings, label: 'ตั้งค่าระบบ', path: '/config' },
   { icon: Shield, label: 'บันทึกความปลอดภัย', path: '/security' },

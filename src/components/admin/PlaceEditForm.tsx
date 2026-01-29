@@ -76,7 +76,9 @@ const PlaceEditForm: React.FC<PlaceEditFormProps> = ({
         price_min: undefined,
         price_max: undefined,
         rating: undefined,
+        rating: undefined,
         image_url: '',
+        google_maps_link: '',
         attraction_type: '',
         is_active: true,
     });
@@ -102,6 +104,7 @@ const PlaceEditForm: React.FC<PlaceEditFormProps> = ({
                 rating: place.rating,
                 // Preserve manually uploaded image_url
                 image_url: imageModifiedRef.current ? prev.image_url : (place.image_url || ''),
+                google_maps_link: place.google_maps_link || '',
                 attraction_type: place.attraction_type || '',
                 is_active: place.is_active !== false,
             }));
@@ -227,6 +230,18 @@ const PlaceEditForm: React.FC<PlaceEditFormProps> = ({
                     value={formData.address}
                     onChange={handleInputChange}
                     placeholder="ที่อยู่"
+                />
+            </div>
+
+            {/* Google Maps Link */}
+            <div className="space-y-2">
+                <Label htmlFor="google_maps_link">ลิงก์ Google Maps</Label>
+                <Input
+                    id="google_maps_link"
+                    name="google_maps_link"
+                    value={formData.google_maps_link}
+                    onChange={handleInputChange}
+                    placeholder="https://maps.app.goo.gl/..."
                 />
             </div>
 

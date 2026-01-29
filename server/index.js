@@ -430,10 +430,52 @@ app.get('/api/stats', async (req, res) => {
     }
 });
 
-app.get('/api/stats/traffic', async (req, res) => {
-    // Note: user_activity_logs.created_at is 'time with time zone' type, 
-    // which doesn't support TO_CHAR. Returning empty data for now.
-    res.json([]);
+// Daily traffic data - total visits per day for the last 7 days
+
+// ============ Telemetry / Tracking API ============
+app.post('/api/track', async (req, res) => {
+    try {
+        const { user_id, events } = req.body;
+
+        if (!events || !Array.isArray(events)) {
+            return res.status(400).json({ message: 'Invalid events data' });
+        }
+
+        const ip = req.ip || req.connection.remoteAddress;
+        const userAgent = req.headers['user-agent'];
+        const values = [];
+        const placeholders = [];
+
+        // Build batch insert query
+        let paramIndex = 1;
+        events.forEach(event => {
+            placeholders.push(`($${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++}, $${paramIndex++})`);
+            values.push(
+                user_id || null,
+                event.action_type,
+                event.target_element || null,
+                event.page_url,
+                JSON.stringify(event.meta_data || {}),
+                ip,
+                userAgent
+            );
+        });
+
+        if (values.length > 0) {
+            const query = `
+                INSERT INTO user_activity_logs 
+                (user_id, action_type, target_element, page_url, meta_data, ip_address, user_agent) 
+                VALUES ${placeholders.join(', ')}
+            `;
+            await pool.query(query, values);
+        }
+
+        res.json({ success: true, count: events.length });
+    } catch (error) {
+        console.error('Error tracking activity:', error);
+        // Don't fail the request to client, just log error
+        res.json({ success: false, error: error.message });
+    }
 });
 
 // Daily traffic data - total visits per day for the last 7 days
@@ -794,4 +836,5 @@ app.get('/api/stats/users-count', async (req, res) => {
 app.listen(PORT, () => {
     console.log(`🚀 Admin API Server running on http://localhost:${PORT}`);
     console.log(`📊 Health check: http://localhost:${PORT}/api/health`);
+    console.log(`✨ Server restart triggered at ${new Date().toISOString()}`);
 });

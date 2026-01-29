@@ -155,9 +155,10 @@ router.post('/', authMiddleware, async (req, res) => {
         price_max,
         rating,
         image_url,
+        google_maps_link,
         is_active
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
       RETURNING *
     `;
 
@@ -174,6 +175,7 @@ router.post('/', authMiddleware, async (req, res) => {
             validated.price_max || null,
             validated.rating || null,
             validated.image_url || null,
+            validated.google_maps_link || null,
             validated.is_active,
         ]);
 
@@ -391,9 +393,10 @@ router.post('/csv/import', authMiddleware, async (req, res) => {
           price_max,
           rating,
           image_url,
+          google_maps_link,
           is_active
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
         RETURNING *
       `;
 
@@ -410,6 +413,7 @@ router.post('/csv/import', authMiddleware, async (req, res) => {
                 validated.price_max || null,
                 validated.rating || null,
                 validated.image_url || null,
+                validated.google_maps_link || null,
                 validated.is_active,
             ]);
 

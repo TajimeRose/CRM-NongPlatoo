@@ -14,6 +14,7 @@ export const PlaceSchema = z.object({
     price_range: z.string().optional().nullable(),
     rating: z.number().min(0).max(5).optional().nullable(),
     image_url: z.string().optional().nullable(),
+    google_maps_link: z.string().optional().nullable(),
     opening_hours: z.string().optional().nullable(),
     attraction_type: z.string().optional().nullable(),
     is_active: z.boolean().default(true),
@@ -43,5 +44,6 @@ export const UpdatePlaceSchema = z.object({
     price_max: z.any().optional(),
     rating: z.any().optional(),
     image_url: z.any().optional(),
+    google_maps_link: z.any().optional(),
     is_active: z.any().optional(),
 });

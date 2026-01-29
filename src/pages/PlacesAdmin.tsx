@@ -41,6 +41,7 @@ import {
 import { toast } from 'sonner';
 import {
     getPlaces,
+    getPlace,
     createPlace,
     updatePlace,
     deletePlace,
@@ -59,7 +60,12 @@ const CATEGORY_OPTIONS = [
     { value: 'วัด', label: 'วัด' },
 ];
 
+import { useSearchParams } from 'react-router-dom';
+
 const PlacesAdmin: React.FC = () => {
+    const [searchParams, setSearchParams] = useSearchParams();
+    const editId = searchParams.get('edit');
+
     // Data state
     const [places, setPlaces] = useState<Place[]>([]);
     const [pagination, setPagination] = useState<PaginationData | null>(null);
@@ -114,6 +120,41 @@ const PlacesAdmin: React.FC = () => {
             setIsLoading(false);
         }
     }, [searchTerm, sortBy, sortOrder, categoryFilter, activeFilter, minRating]);
+
+    // Handle deep link editing
+    useEffect(() => {
+        if (editId && !isLoading && places.length === 0) {
+            // Initial load or refresh - wait for places to load or fetch specific place
+            const loadTargetPlace = async () => {
+                try {
+                    const place = await getPlace(parseInt(editId));
+                    setEditingPlace(place);
+                    setIsCreateMode(false);
+                    // Clear param to avoid reopening on refresh, 
+                    // or keep it to allow sharing links. 
+                    // Let's keep it but remove if dialog is closed.
+                } catch (err) {
+                    console.error('Error loading deep-linked place:', err);
+                    toast.error('ไม่สามารถโหลดข้อมูลสถานที่ที่ระบุได้');
+                }
+            };
+            loadTargetPlace();
+        }
+        else if (editId && !isLoading && places.length > 0) {
+            // Places loaded, check if in list
+            const targetPlace = places.find(p => p.id === parseInt(editId));
+            if (targetPlace) {
+                setEditingPlace(targetPlace);
+                setIsCreateMode(false);
+            } else {
+                // Not in current list (maybe pagination?), fetch individually
+                getPlace(parseInt(editId)).then(place => {
+                    setEditingPlace(place);
+                    setIsCreateMode(false);
+                }).catch(() => toast.error('ไม่พบสถานที่ที่ระบุ'));
+            }
+        }
+    }, [editId, isLoading, places]);
 
     useEffect(() => {
         fetchPlaces(1);
@@ -223,7 +264,7 @@ const PlacesAdmin: React.FC = () => {
 
     return (
         <AdminLayout
-            title="จัดการสถานที่"
+            title="จัดการข้อมูลสถานที่"
             subtitle="เพิ่ม แก้ไข และจัดการข้อมูลสถานที่ทั้งหมด"
         >
             <div className="space-y-6">
@@ -367,9 +408,18 @@ const PlacesAdmin: React.FC = () => {
             {/* Edit/Create Dialog */}
             <Dialog
                 open={!!editingPlace}
-                onOpenChange={() => {
-                    setEditingPlace(null);
-                    setIsCreateMode(false);
+                onOpenChange={(open) => {
+                    if (!open) {
+                        setEditingPlace(null);
+                        setIsCreateMode(false);
+                        // Clear URL param when closing
+                        if (editId) {
+                            setSearchParams(params => {
+                                params.delete('edit');
+                                return params;
+                            });
+                        }
+                    }
                 }}
             >
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">

@@ -35,6 +35,7 @@ export interface Place {
     rating?: number;
     image_url?: string;
     image_urls?: string;  // Legacy field for backward compatibility
+    google_maps_link?: string;
     attraction_type?: string;
     is_active?: boolean;
     created_at?: string;
@@ -59,7 +60,9 @@ export interface CreatePlace {
     price_min?: number;
     price_max?: number;
     rating?: number;
+    rating?: number;
     image_url?: string;
+    google_maps_link?: string;
     attraction_type?: string;
     is_active?: boolean;
 }
