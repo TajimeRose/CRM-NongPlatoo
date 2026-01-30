@@ -227,6 +227,30 @@ app.delete('/api/users/:id', async (req, res) => {
 // ============ Proxy API ============
 // Moved to src/routes/proxy.js
 
+// ============ Chat Feedback API ============
+app.get('/api/feedback', async (req, res) => {
+    try {
+        const result = await pool.query(`
+      SELECT 
+        mf.id,
+        mf.feedback_type,
+        mf.feedback_comment,
+        TO_CHAR(mf.created_at, 'YYYY-MM-DD HH24:MI:SS') as "createdAt",
+        mf.chat_log_id,
+        COALESCE(mf.user_message, cl.user_message) as user_message,
+        COALESCE(mf.ai_response, cl.ai_response) as ai_response
+      FROM message_feedback mf
+      LEFT JOIN chat_logs cl ON mf.chat_log_id = cl.id
+      ORDER BY mf.created_at DESC 
+      LIMIT 100
+    `);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching feedback:', error);
+        res.status(500).json({ message: 'Failed to fetch feedback' });
+    }
+});
+
 // ============ Chat Logs API ============
 app.get('/api/chat-logs', async (req, res) => {
     try {

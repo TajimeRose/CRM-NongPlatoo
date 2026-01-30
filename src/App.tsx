@@ -13,6 +13,7 @@ import AdminMapPage from "./pages/AdminMapPage";
 import SystemConfig from "./pages/SystemConfig";
 import SecurityLogs from "./pages/SecurityLogs";
 import ChatLogs from "./pages/ChatLogs";
+import ChatFeedback from "./pages/ChatFeedback";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,7 @@ const App = () => (
             <Route path="/config" element={<ProtectedRoute><SystemConfig /></ProtectedRoute>} />
             <Route path="/security" element={<ProtectedRoute><SecurityLogs /></ProtectedRoute>} />
             <Route path="/chats" element={<ProtectedRoute><ChatLogs /></ProtectedRoute>} />
+            <Route path="/feedback" element={<ProtectedRoute><ChatFeedback /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -8,6 +8,7 @@ import {
   Settings,
   Shield,
   MessageSquare,
+  ThumbsUp,
   Activity,
   ChevronLeft,
   ChevronRight,
@@ -26,6 +27,7 @@ const navItems = [
   { icon: Settings, label: 'ตั้งค่าระบบ', path: '/config' },
   { icon: Shield, label: 'บันทึกความปลอดภัย', path: '/security' },
   { icon: MessageSquare, label: 'ประวัติแชท AI', path: '/chats' },
+  { icon: ThumbsUp, label: 'Chat Feedback', path: '/feedback' },
 ];
 
 const AdminSidebar = () => {

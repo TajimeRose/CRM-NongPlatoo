@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import {
   fetchFirebaseUsers,
-  resetUserPassword,
   toggleUserDisabled,
   deleteFirebaseUser,
   syncAllUsers,
   type FirebaseUser
 } from '@/api/firebase';
+import { auth } from '@/lib/firebase';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -90,7 +91,8 @@ const UsersManagement = () => {
   const [newUser, setNewUser] = useState({ name: '', email: '', role: 'user' });
 
   // Format timestamp to readable date
-  const formatDate = (timestamp?: number): string => {
+  // Format timestamp to readable date
+  const formatDate = (timestamp?: number | string): string => {
     if (!timestamp) return '-';
     const date = new Date(timestamp);
     return date.toLocaleDateString('th-TH', {
@@ -191,14 +193,12 @@ const UsersManagement = () => {
 
   // Firebase Admin actions
   const handleResetPassword = async (userId: string, email: string) => {
-    const result = await resetUserPassword(userId);
-    if (result.success) {
-      toast.success(`สร้างลิงก์รีเซ็ตรหัสผ่านสำหรับ ${email} แล้ว`);
-      if (result.link) {
-        console.log('Reset link:', result.link);
-      }
-    } else {
-      toast.error(result.message || 'เกิดข้อผิดพลาด');
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast.success(`ส่งอีเมลรีเซ็ตรหัสผ่านไปยัง ${email} แล้ว`);
+    } catch (err: any) {
+      console.error('Error sending reset email:', err);
+      toast.error('เกิดข้อผิดพลาดในการส่งอีเมล: ' + (err.message || 'Unknown error'));
     }
     setConfirmDialog(null);
   };
@@ -507,7 +507,10 @@ const UsersManagement = () => {
               onClick={() => {
                 if (!confirmDialog) return;
                 if (confirmDialog.type === 'delete') handleDeleteAccount(confirmDialog.userId);
-                if (confirmDialog.type === 'disable') handleDisableAccount(confirmDialog.userId);
+                if (confirmDialog.type === 'disable') {
+                  const user = users.find(u => u.id === confirmDialog.userId);
+                  if (user) handleDisableAccount(confirmDialog.userId, user.status === 'disabled');
+                }
                 if (confirmDialog.type === 'reset') handleResetPassword(confirmDialog.userId, confirmDialog.userName);
               }}
             >
