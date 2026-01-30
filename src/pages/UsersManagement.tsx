@@ -195,10 +195,19 @@ const UsersManagement = () => {
   const handleResetPassword = async (userId: string, email: string) => {
     try {
       await sendPasswordResetEmail(auth, email);
-      toast.success(`ส่งอีเมลรีเซ็ตรหัสผ่านไปยัง ${email} แล้ว`);
+      toast.success(`ส่งอีเมลรีเซ็ตรหัสผ่านไปยัง ${email} แล้ว (กรุณาตรวจสอบโฟลเดอร์ Spam/Junk)`);
+      console.log(`Password reset email sent to ${email}`);
     } catch (err: any) {
       console.error('Error sending reset email:', err);
-      toast.error('เกิดข้อผิดพลาดในการส่งอีเมล: ' + (err.message || 'Unknown error'));
+      let errorMessage = 'เกิดข้อผิดพลาดในการส่งอีเมล';
+      if (err.code === 'auth/user-not-found') {
+        errorMessage = 'ไม่พบผู้ใช้นี้ในระบบ Firebase Authentication (อาจมีแค่ใน Database)';
+      } else if (err.code === 'auth/invalid-email') {
+        errorMessage = 'รูปแบบอีเมลไม่ถูกต้อง';
+      } else if (err.code === 'auth/missing-android-pkg-name' || err.code === 'auth/missing-continue-uri' || err.code === 'auth/missing-ios-bundle-id') {
+        errorMessage = 'การตั้งค่า Firebase Console ไม่สมบูรณ์ (ตรวจสอบ Email Templates)';
+      }
+      toast.error(`${errorMessage}: ${err.message}`);
     }
     setConfirmDialog(null);
   };
