@@ -2,7 +2,7 @@
 
 ## Project Info
 
-ระบบ CRM สำหรับการท่องเที่ยวจังหวัดสมุทรสงคราม
+ระบบ CRM สำหรับการท่องเที่ยวจังหวัดสมุทรสงคราม ชัดการเนื้อหาและปรับแต่ง NongPlatoo.Ai
 
 **Technologies:**
 - Frontend: Vite + React + TypeScript + Tailwind CSS + shadcn-ui
